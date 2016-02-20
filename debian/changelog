@@ -2,6 +2,7 @@ sipsak (0.9.7-fox-1) unstable; urgency=medium
 
   * Fix: NONE value of c-ares lib dir
   * Fix: duplicate headers
+  * Added message body conversion: UTF-8 → UCS-2BE
 
  -- John Fox Woland <fox@woland.me>  Sat, 20 Feb 2016 22:58:10 +0500
 

@@ -1,5 +1,6 @@
 * version 0.9.7
   - merged Debian Jessie patches
+  - added message body conversion: UTF-8 → UCS-2BE
 * version 0.9.6
   - added new option -j to add a header
   - added support for multiple variable replacement (option -g)

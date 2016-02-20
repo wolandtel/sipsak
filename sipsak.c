@@ -54,6 +54,7 @@
 #ifdef HAVE_GETOPT_H
 # include <getopt.h>
 #endif
+# include <iconv.h>
 
 #include "helper.h"
 #include "header_f.h"
@@ -329,9 +330,16 @@ int main(int argc, char *argv[])
 				namebeg=str_to_int(optarg);
 				break;
 			case 'B':
-				mes_body=str_alloc(strlen(optarg) + 1);
-				strncpy(mes_body, optarg, strlen(optarg));
+			{
+				iconv_t	cd;
+				char *inbuf = optarg, *outbuf;
+				size_t inbytes = strlen(optarg), outbytes = inbytes * 2;
+				outbuf = mes_body = str_alloc(outbytes + 1);
+				cd = iconv_open("UCS-2BE", "UTF-8");
+				iconv(cd, &inbuf, &inbytes, &outbuf, &outbytes);
+				iconv_close(cd);
 				break;
+			}
 			case 'c':
 				backup=str_alloc(strlen(optarg)+1);
 				strncpy(backup, optarg, strlen(optarg));

@@ -1,5 +1,6 @@
 * version 0.9.7
   - merged Debian Jessie patches
+  - added message body conversion: UTF-8 → UCS-2BE
   - fixed duplicate headers
   - fixed autoconf
 * version 0.9.6
