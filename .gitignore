@@ -11,3 +11,14 @@
 						
 # Objects
 *.o
+
+# debhelper
+/debian/files
+/debian/sipsak*
+
+# Binary
+/sipsak
+
+# Other
+build-stamp
+

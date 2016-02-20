@@ -83,7 +83,13 @@ AC_DEFUN([CHECK_LIB_CARES],
 
 		AC_CHECK_LIB(cares, ares_version,
 		  AC_DEFINE([HAVE_CARES_H], [1], [Has cares.h])
-		  LIBS="$LIBS -L$ares_libdir -l$ares_libcall"
+		  if test "$ares_libcall" = "NONE"; then
+		    ares_libcall=cares
+		  fi
+		  if test "$ares_libdir" != "NONE"; then
+		    LIBS="$LIBS -L$ares_libdir"
+		  fi
+		  LIBS="$LIBS -l$ares_libcall"
 		  CFLAGS="$CFLAGS -I$ares_incdir"
 		  SIPSAK_HAVE_ARES="1"
 		  AC_SUBST(SIPSAK_HAVE_ARES)

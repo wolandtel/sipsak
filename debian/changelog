@@ -1,3 +1,9 @@
+sipsak (0.9.6-1-fox) unstable; urgency=medium
+
+  * Fix: NONE value of c-ares lib dir
+
+ -- John Fox Woland <fox@woland.me>  Sat, 20 Feb 2016 22:58:10 +0500
+
 sipsak (0.9.6-2.2) unstable; urgency=medium
 
   * Non-maintainer upload.
