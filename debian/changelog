@@ -1,6 +1,7 @@
-sipsak (0.9.6-1-fox) unstable; urgency=medium
+sipsak (0.9.7-fox-1) unstable; urgency=medium
 
   * Fix: NONE value of c-ares lib dir
+  * Fix: duplicate headers
 
  -- John Fox Woland <fox@woland.me>  Sat, 20 Feb 2016 22:58:10 +0500
 

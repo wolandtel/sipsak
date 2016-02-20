@@ -1,3 +1,7 @@
+* version 0.9.7
+  - merged Debian Jessie patches
+  - fixed duplicate headers
+  - fixed autoconf
 * version 0.9.6
   - added new option -j to add a header
   - added support for multiple variable replacement (option -g)
