@@ -1,0 +1,13 @@
+# Vim temp files
+.*.sw[a-z]
+
+# ./configure
+/.deps
+/config.h
+/config.log
+/config.status
+/Makefile
+/stamp-h1
+						
+# Objects
+*.o
