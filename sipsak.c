@@ -287,7 +287,7 @@ int main(int argc, char *argv[])
 	namebeg=nameend=maxforw= -1;
 	numeric=via_ins=redirects=fix_crlf=processes = 1;
 	username=password=replace_str=hostname=contact_uri=mes_body = NULL;
-	con_dis=auth_username=from_uri=headers = NULL;
+	con_dis=auth_username=from_uri=headers=UAH = NULL;
 	scheme = user = host = backup = req = rep = rec = NULL;
 	re = NULL;
 	address= 0;
@@ -719,15 +719,77 @@ int main(int argc, char *argv[])
 	if ((file_b) && (fix_crlf)) {
 		insert_cr(buff);
 	}
-	if (headers) {
-		backup = str_alloc(strlen(headers) + 30); // FIXME
-		strcpy(backup, headers);
-		headers = backup;
-		replace_string(headers, "\\n", "\r\n");
-		backup = headers + strlen(headers) - 1;
-		if (*backup != '\n') {
-			strcpy(backup + 1, "\r\n");
+	if (headers && strlen(headers)) {
+		int len, hlen = 0, index, hcount = 0, max_headers = 100; // random magic number for default max_headers
+		char **hlist = malloc(sizeof(char *) * max_headers), *hp = headers, *lhp, *nheaders;
+		
+		while (hp && *hp)
+		{
+			// find start of header
+			while (hp && ((lhp = strstr(hp, "\\n")) == hp))
+			{
+				strcpy(hp, "\0\0");
+				hp += 2;
+			}
+			
+			if (!*hp)
+				continue; // let's finish it
+			
+			if (hcount == max_headers)
+			{
+				max_headers *= 2;
+				hlist = realloc(sizeof(char *) * max_headers);
+			}
+			hlist[hcount++] = hp;
+			
+			// if delimeter is found
+			if (lhp)
+			{
+				strcpy(lhp, "\0\0");
+				hp = lhp + 2;
+			}
+			else
+				hp = NULL; // it was last header
 		}
+		
+		for (index = 0; index < hcount; index++)
+		{
+			hp = hlist[index];
+			len = strlen(hp);
+			if (strstr(hp, UA_STR) == hp)
+			{
+				if (len > UA_STR_LEN)
+				{
+					if (UAH)
+						free(UAH);
+					UAH = strdup(hp + UA_STR_LEN);
+				}
+				*hp = 0;
+			}
+			else
+				hlen += len + 2;
+		}
+		
+		if (hlen)
+		{
+			nheaders = str_alloc(hlen + 1);
+			hlen = 0;
+			for (index = 0; index < hcount; index++)
+			{
+				hp = hlist[index];
+				if (len = strlen(hp))
+				{
+					strcpy(nheaders + hlen, hp);
+					hlen += len;
+					strcpy(nheaders + hlen, "\r\n");
+					hlen += 2;
+				}
+			}
+		}
+
+		headers = nheaders;
+		free(nheaders);
+		
 		if (file_b)
 			insert_header(buff, headers, 1);
 	}
