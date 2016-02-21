@@ -294,6 +294,12 @@
 #endif
 #define SIPSAK_HASHHEXLEN 2 * SIPSAK_HASHLEN
 
+struct bytearray
+{
+	char *data;
+	size_t len;
+};
+
 /* lots of global variables. ugly but makes life easier. */
 unsigned long address;
 unsigned int nonce_count, transport;
@@ -303,10 +309,11 @@ int maxforw, lport, rport, randtrash, trashchar, numeric, symmetric;
 int file_b, uri_b, trace, via_ins, usrloc, redirects, rand_rem, replace_b;
 int empty_contact, nagios_warn, fix_crlf, timing, outbound_proxy, inv_final;
 char *username, *domainname, *password, *replace_str, *hostname, *contact_uri;
-char *mes_body, *con_dis, *auth_username, *from_uri, *headers;
+char *con_dis, *auth_username, *from_uri, *headers;
 char fqdn[FQDN_SIZE];
 char target_dot[INET_ADDRSTRLEN], source_dot[INET_ADDRSTRLEN];
 char *req, *rep, *rec, *transport_str;
 regex_t* re;
+struct bytearray *mes_body;
 
 #endif

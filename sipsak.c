@@ -334,10 +334,13 @@ int main(int argc, char *argv[])
 				iconv_t	cd;
 				char *inbuf = optarg, *outbuf;
 				size_t inbytes = strlen(optarg), outbytes = inbytes * 2;
-				outbuf = mes_body = str_alloc(outbytes + 1);
+				mes_body = malloc(sizeof(struct bytearray));
+				mes_body->data = outbuf = str_alloc(outbytes);
+				mes_body->len = outbytes;
 				cd = iconv_open("UCS-2BE", "UTF-8");
 				iconv(cd, &inbuf, &inbytes, &outbuf, &outbytes);
 				iconv_close(cd);
+				mes_body->len -= outbytes; // some UTF-8 characters 1-byte long, some 2-byte long. All UCS-2 chars 2-byte long
 				break;
 			}
 			case 'c':
@@ -811,8 +814,9 @@ int main(int argc, char *argv[])
 				rand_rem=0;
 			}
 		}
+		// FIX: what's a peace of crap???
 		if (via_ins) {
-			fprintf(stderr, "warning: ignoring -i option when in usrloc mode\n");
+			//fprintf(stderr, "warning: ignoring -i option when in usrloc mode\n");
 			via_ins=0;
 		}
 		if (nameend==-1)

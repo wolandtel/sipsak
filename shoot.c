@@ -1013,7 +1013,11 @@ void shoot(char *buf, int buff_size)
 					regcomp(&(regexps.authexp), "^SIP/[0-9]\\.[0-9] 40[17] ", REG_EXTENDED|REG_NOSUB|REG_ICASE);
 					insert_auth(req, rec);
 					if (verbose > 2)
+					{
 						printf("\nreceived:\n%s\n", rec);
+						if (mes_body)
+							printf("<UCS-2BE encoded body>\n");
+					}
 					new_transaction(req);
 					continue;
 				} /* if auth...*/
