@@ -167,7 +167,7 @@ void trace_reply()
 		}
 		namebeg++;
 		cseq_counter++;
-		create_msg(REQ_OPT, req, NULL, usern, cseq_counter);
+		create_msg(REQ_OPT, &reqData, NULL, usern, cseq_counter);
 		set_maxforw(req, namebeg);
 		return;
 	}
@@ -402,26 +402,26 @@ void handle_usrloc()
 						namebeg++;
 						cseq_counter++;
 						create_usern(usern, username, namebeg);
-						create_msg(REQ_REG, req, NULL, usern, cseq_counter);
+						create_msg(REQ_REG, &reqData, NULL, usern, cseq_counter);
 					}
 					else {
 						/* to prevent only removing of low
 						   user numbers new random number*/
 						cseq_counter++;
 						create_usern(usern, username, ((float)rand()/RAND_MAX) * namebeg);
-						create_msg(REQ_REM, req, NULL, usern, cseq_counter);
+						create_msg(REQ_REM, &reqData, NULL, usern, cseq_counter);
 						usrlocstep=UNREG_REP;
 					}
 				} /* invite == 0 && message == 0 */
 				else if (invite == 1) {
 					cseq_counter++;
-					create_msg(REQ_INV, req, rep, usern, cseq_counter);
+					create_msg(REQ_INV, &reqData, &repData, usern, cseq_counter);
 					inv_trans = 1;
 					usrlocstep=INV_RECV;
 				}
 				else if (message == 1) {
 					cseq_counter++;
-					create_msg(REQ_MES, req, rep, usern, cseq_counter);
+					create_msg(REQ_MES, &reqData, &repData, usern, cseq_counter);
 					inv_trans = 0;
 					usrlocstep=MES_RECV;
 				}
@@ -537,7 +537,7 @@ void handle_usrloc()
 							namebeg++;
 							cseq_counter++;
 							create_usern(usern, username, namebeg);
-							create_msg(REQ_REG, req, NULL, usern, cseq_counter);
+							create_msg(REQ_REG, &reqData, NULL, usern, cseq_counter);
 							usrlocstep=REG_REP;
 						}
 						else {
@@ -545,7 +545,7 @@ void handle_usrloc()
 							   user numbers new random number*/
 							cseq_counter++;
 							create_usern(usern, username, ((float)rand()/RAND_MAX) * namebeg);
-							create_msg(REQ_REM, req, NULL, usern, cseq_counter);
+							create_msg(REQ_REM, &reqData, NULL, usern, cseq_counter);
 							usrlocstep=UNREG_REP;
 						}
 					} /* usrloc == 1 */
@@ -553,7 +553,7 @@ void handle_usrloc()
 						namebeg++;
 						cseq_counter++;
 						create_usern(usern, username, namebeg);
-						create_msg(REQ_INV, req, rep, usern, cseq_counter);
+						create_msg(REQ_INV, &reqData, &repData, usern, cseq_counter);
 						inv_trans = 1;
 						usrlocstep=INV_RECV;
 					}
@@ -647,7 +647,7 @@ void handle_usrloc()
 							namebeg++;
 							cseq_counter++;
 							create_usern(usern, username, namebeg);
-							create_msg(REQ_REG, req, NULL, usern, cseq_counter);
+							create_msg(REQ_REG, &reqData, NULL, usern, cseq_counter);
 							usrlocstep=REG_REP;
 						}
 						else {
@@ -655,7 +655,7 @@ void handle_usrloc()
 							   user numbers new random number*/
 							cseq_counter++;
 							create_usern(usern, username, ((float)rand()/RAND_MAX) * namebeg);
-							create_msg(REQ_REM, req, NULL, usern, cseq_counter);
+							create_msg(REQ_REM, &reqData, NULL, usern, cseq_counter);
 							usrlocstep=UNREG_REP;
 						}
 					} /* usrloc == 1 */
@@ -663,7 +663,7 @@ void handle_usrloc()
 						namebeg++;
 						cseq_counter++;
 						create_usern(usern, username, namebeg);
-						create_msg(REQ_MES, req, NULL, usern, cseq_counter);
+						create_msg(REQ_MES, &reqData, NULL, usern, cseq_counter);
 						usrlocstep=MES_RECV;
 					}
 				} /* regexec */
@@ -709,7 +709,7 @@ void handle_usrloc()
 					namebeg++;
 					cseq_counter++;
 					create_usern(usern, username, namebeg);
-					create_msg(REQ_REG, req, NULL, usern, cseq_counter);
+					create_msg(REQ_REG, &reqData, NULL, usern, cseq_counter);
 					usrlocstep=REG_REP;
 				}
 				else {
@@ -788,7 +788,7 @@ void shoot(char *buf, int buff_size)
 	struct timespec sleep_ms_s, sleep_rem;
 	int ret, cseqtmp, rand_tmp;
 	char buf2[BUFSIZE], buf3[BUFSIZE], lport_str[LPORT_STR_LEN];
-
+	
 	/* delays.retryAfter = DEFAULT_TIMEOUT; */
 	if (transport == SIP_UDP_TRANSPORT) {
 		delays.retryAfter = SIP_T1;
@@ -822,9 +822,9 @@ void shoot(char *buf, int buff_size)
 	memset(&(times.starttime), 0, sizeof(times.starttime));
 	memset(&(times.delaytime), 0, sizeof(times.delaytime));
 
-	req = buf;
-	rep = buf2;
-	rec = buf3;
+	reqData.data = req = buf;
+	repData.data = rep = buf2;
+	recData.data = rec = buf3;
 
 	create_sockets(&cdata);
 
@@ -886,16 +886,16 @@ void shoot(char *buf, int buff_size)
 	if (usrloc == 1||invite == 1||message == 1){
 		/* calculate the number of required steps and create initial mes */
 		if (usrloc == 1) {
-			create_msg(REQ_REG, req, NULL, usern, cseq_counter);
+			create_msg(REQ_REG, &reqData, NULL, usern, cseq_counter);
 			usrlocstep=REG_REP;
 		}
 		else if (invite == 1) {
-			create_msg(REQ_INV, req, rep, usern, cseq_counter);
+			create_msg(REQ_INV, &reqData, &repData, usern, cseq_counter);
 			inv_trans = 1;
 			usrlocstep=INV_RECV;
 		}
 		else {
-			create_msg(REQ_MES, req, rep, usern, cseq_counter);
+			create_msg(REQ_MES, &reqData, &repData, usern, cseq_counter);
 			if (mes_body)
 				usrlocstep=MES_OK_RECV;
 			else
@@ -905,18 +905,18 @@ void shoot(char *buf, int buff_size)
 	else if (trace == 1){
 		/* for trace we need some spezial initis */
 		namebeg=0;
-		create_msg(REQ_OPT, req, NULL, usern, cseq_counter);
+		create_msg(REQ_OPT, &reqData, NULL, usern, cseq_counter);
 		set_maxforw(req, namebeg);
 	}
 	else if (flood == 1){
 		if (nameend<=0) nameend=INT_MAX;
 		namebeg=1;
-		create_msg(REQ_FLOOD, req, NULL, usern, cseq_counter);
+		create_msg(REQ_FLOOD, &reqData, NULL, usern, cseq_counter);
 	}
 	else if (randtrash == 1){
 		counters.randretrys=0;
 		namebeg=1;
-		create_msg(REQ_RAND, req, NULL, usern, cseq_counter);
+		create_msg(REQ_RAND, &reqData, NULL, usern, cseq_counter);
 		nameend=(int)strlen(req);
 		if (trashchar == 1){
 			if (trashchar < nameend)
@@ -931,7 +931,7 @@ void shoot(char *buf, int buff_size)
 		/* for none of the modes we also need some inits */
 		if (file_b == 0) {
 			namebeg=1;
-			create_msg(REQ_OPT, req, NULL, usern, cseq_counter);
+			create_msg(REQ_OPT, &reqData, NULL, usern, cseq_counter);
 		}
 		else {
 			if (STRNCASECMP(req, INV_STR, INV_STR_LEN) == 0) {
@@ -960,7 +960,7 @@ void shoot(char *buf, int buff_size)
 			nanosleep(&sleep_ms_s, &sleep_rem);
 		}
 
-		send_message(req, &cdata, &counters, &times);
+		send_message(&reqData, &cdata, &counters, &times);
 
 		/* in flood we are only interested in sending so skip the rest */
 		if (flood == 0) {
@@ -979,7 +979,7 @@ void shoot(char *buf, int buff_size)
 					cdata.dontsend = 0;
 					inv_trans = 0;
 					/* lets fire the ACK to the server */
-					send_message(rep, &cdata, &counters, &times);
+					send_message(&repData, &cdata, &counters, &times);
 					inv_trans = 1;
 				}
 				/* check for old CSeq => ignore retransmission */
@@ -1063,7 +1063,7 @@ void shoot(char *buf, int buff_size)
 			}
 			namebeg++;
 			cseq_counter++;
-			create_msg(REQ_FLOOD, req, NULL, usern, cseq_counter);
+			create_msg(REQ_FLOOD, &reqData, NULL, usern, cseq_counter);
 		}
 	} /* while 1 */
 

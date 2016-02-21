@@ -72,7 +72,7 @@ struct sipsak_delay {
 
 void create_sockets(struct sipsak_con_data *cd);
 
-void send_message(char* mes, struct sipsak_con_data *cd,
+void send_message(struct rawData *mes, struct sipsak_con_data *cd,
 			struct sipsak_counter *sc, struct sipsak_sr_time *srt);
 
 void check_socket_error(int socket, int size);

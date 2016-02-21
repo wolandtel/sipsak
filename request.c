@@ -29,10 +29,11 @@
 #include "header_f.h"
 
 /* create a valid sip header for the different modes */
-void create_msg(int action, char *req_buff, char *repl_buff, char *username, int cseq){
+void create_msg(int action, struct rawData *req, struct rawData *repl, char *username, int cseq){
 	unsigned int c, d, len;
-	char *req_buf_begin = req_buff;
-
+	char *req_buff = req->data, *repl_buff = repl->data, *req_buf_begin = req_buff;
+	req->len = repl->len = 0; // FIX
+	
 	if(cseq == 0) {
 		fprintf(stderr, "error: CSeq 0 is not allowed\n");
 		exit_code(253);
@@ -190,31 +191,32 @@ void create_msg(int action, char *req_buff, char *repl_buff, char *username, int
 					FROM_STR, fqdn, lport, c);
 			}
 			req_buff += strlen(req_buff);
-			if (mes_body) {
-				len = strlen(mes_body);
-			}
-			else {
+			if (mes_body)
+				len = mes_body->len;
+			else
 				len = SIPSAK_MES_STR_LEN + strlen(username);
-			}
+			
 			sprintf(req_buff, "%s%u\r\n", CON_LEN_STR, len);
 			req_buff += strlen(req_buff);
+			
 			if (con_dis) {
 				sprintf(req_buff, "%s%s\r\n", CON_DIS_STR, con_dis);
 				req_buff += strlen(req_buff);
 			}
 			sprintf(req_buff, "\r\n");
 			req_buff += 2;
-			if (mes_body) {
-				sprintf(req_buff,
-					"%s",
-					mes_body);
+			
+			add_via(req_buf_begin);
+			if (mes_body)
+			{
+				req->len = strlen(req_buff) + mes_body->len;
+				memcpy(req_buff, mes_body->data, mes_body->len);
 			}
 			else {
 				sprintf(req_buff, "%s%s", SIPSAK_MES_STR, username);
 				req_buff += strlen(req_buff) - 1;
 				*(req_buff) = '.';
 			}
-			add_via(req_buf_begin);
 			sprintf(repl_buff,
 				"%s"
 				"%ssip:sipsak@%s:%i;tag=%x\r\n"
@@ -314,5 +316,9 @@ void create_msg(int action, char *req_buff, char *repl_buff, char *username, int
 		if (repl_buff)
 			insert_header(repl_buff, headers, 1);
 	}
+	if (!req->len)
+		req->len = strlen(req->data);
+	if (!repl->len)
+		repl->len = strlen(repl->data);
 }
 

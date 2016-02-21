@@ -153,27 +153,29 @@ void create_sockets(struct sipsak_con_data *cd) {
 	}
 }
 
-void send_message(char* mes, struct sipsak_con_data *cd,
+void send_message(struct rawData *mes, struct sipsak_con_data *cd,
 			struct sipsak_counter *sc, struct sipsak_sr_time *srt) {
 	struct timezone tz;
 	int ret;
-
+	
 	if (cd->dontsend == 0) {
-		if (verbose > 2) {
-			printf("\nrequest:\n%s", mes);
+		if (verbose > 2)
+		{
+			printf("\nrequest:\n");
+			write(1, mes->data, mes->len);
 		}
 		/* lets fire the request to the server and store when we did */
 		if (cd->csock == -1) {
 #ifdef DEBUG
 			printf("\nusing un-connected socket for sending\n");
 #endif
-			ret = sendto(cd->usock, mes, strlen(mes), 0, (struct sockaddr *) &(cd->adr), sizeof(struct sockaddr));
+			ret = sendto(cd->usock, mes->data, mes->len, 0, (struct sockaddr *) &(cd->adr), sizeof(struct sockaddr));
 		}
 		else {
 #ifdef DEBUG
 			printf("\nusing connected socket for sending\n");
 #endif
-			ret = send(cd->csock, mes, strlen(mes), 0);
+			ret = send(cd->csock, mes->data, mes->len, 0);
 		}
 		(void)gettimeofday(&(srt->sendtime), &tz);
 		if (ret==-1) {
