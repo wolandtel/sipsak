@@ -677,7 +677,7 @@ void print_message_line(char *message)
 }
 
 /* return pointer to the beginning of the message body */
-inline char* get_body(char *mes) {
+char* get_body(char *mes) {
 	char *cr;
 
 	if ((cr = strstr(mes, "\r\n\r\n")) != NULL) {

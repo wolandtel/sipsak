@@ -295,7 +295,7 @@ static void cares_callback(void *arg, int status, unsigned char *abuf, int alen)
 	}
 }
 
-inline unsigned long srv_ares(char *host, int *port, char *srv) {
+unsigned long srv_ares(char *host, int *port, char *srv) {
 	int nfds, count, srvh_len;
 	char *srvh;
 	fd_set read_fds, write_fds;
